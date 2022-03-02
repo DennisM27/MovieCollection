@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MovieCollection
@@ -260,17 +261,120 @@ public class MovieCollection
   
   private void listGenres()
   {
-    /* TASK 5: IMPLEMENT ME! */
+    ArrayList<String> allGenres = new ArrayList<>();
+
+    for (int i = 0; i < movies.size(); i++) {
+      String[] genres = movies.get(i).getGenres().split("\\|");
+      for (String movieGenre : genres) {
+        boolean isDuplicate = false;
+        for (String genre : allGenres) {
+          if (movieGenre.equals(genre)) {
+            isDuplicate = true;
+          }
+        }
+        if (!isDuplicate) {
+          allGenres.add(movieGenre);
+        }
+      }
+    }
+
+    // sort list
+    printList(allGenres);
+
+    System.out.print("Enter a genre number: ");
+    String searchTerm = scanner.nextLine().toLowerCase();
+
+    ArrayList<Movie> results = new ArrayList<Movie>();
+
+    // search through ALL movies in collection
+    for (int i = 0; i < movies.size(); i++)
+    {
+      String movieGenre = movies.get(i).getGenres();
+      movieGenre = movieGenre.toLowerCase();
+
+      if (movieGenre.indexOf(searchTerm) != -1)
+      {
+        //add the Movie objest to the results list
+        results.add(movies.get(i));
+      }
+    }
+
+    // sort the results by title
+    sortResults(results);
+
+    // now, display them all to the user
+    for (int i = 0; i < results.size(); i++)
+    {
+      String title = results.get(i).getTitle();
+
+      // this will print index 0 as choice 1 in the results list; better for user!
+      int choiceNum = i + 1;
+
+      System.out.println("" + choiceNum + ". " + title);
+    }
+
+    System.out.println("Which movie would you like to learn more about?");
+    System.out.print("Enter number: ");
+
+    int choice = scanner.nextInt();
+    scanner.nextLine();
+
+    Movie selectedMovie = results.get(choice - 1);
+
+    displayMovieInfo(selectedMovie);
+
+    System.out.println("\n ** Press Enter to Return to Main Menu **");
+    scanner.nextLine();
   }
-  
+
   private void listHighestRated()
   {
-    /* TASK 6: IMPLEMENT ME! */
+    ArrayList<Movie> movieList = new ArrayList<>();
+
+    for (int i = 0; i < movies.size(); i++) {
+      double rating = movies.get(i).getUserRating(); //
+      boolean ratingIsBiggest = true;
+
+      for (int k = i + 1; k < movies.size(); k++) {
+        double anotherRating = movies.get(k).getUserRating(); //
+        if (anotherRating > rating) {
+          ratingIsBiggest = false;
+        }
+      }
+
+      if (movieList.size() >= 50) {
+        break;
+      } else if (ratingIsBiggest) {
+        movieList.add(movies.get(i));
+      }
+    }
+
+    printMovieList(movieList);
   }
-  
+
   private void listHighestRevenue()
   {
-    /* TASK 6: IMPLEMENT ME! */
+    ArrayList<Movie> movieList = new ArrayList<>();
+
+    for (int i = 0; i < movies.size(); i++) {
+      double revenue = movies.get(i).getRevenue(); //
+      boolean biggest = true;
+
+      for (int k = i + 1; k < movies.size(); k++) {
+        double anotherRevenue = movies.get(k).getRevenue(); //
+        if (anotherRevenue > revenue) {
+          biggest = false;
+        }
+      }
+
+      if (movieList.size() >= 50) {
+        break;
+      } else if (biggest) {
+        movieList.add(movies.get(i));
+      }
+    }
+
+    printMovieList(movieList);
   }
 
   private void importMovieList(String fileName)
@@ -319,4 +423,15 @@ public class MovieCollection
   
   // ADD ANY ADDITIONAL PRIVATE HELPER METHODS you deem necessary
 
+  private void printList(ArrayList<String> list) {
+    for (int i = 0; i < list.size(); i++) {
+      System.out.println(i + 1+". "+list.get(i));
+    }
+  }
+
+  private void printMovieList(ArrayList<Movie> list) {
+    for (int i = 0; i < list.size(); i++) {
+      System.out.println(i + 1+". "+list.get(i).toString());
+    }
+  }
 }
